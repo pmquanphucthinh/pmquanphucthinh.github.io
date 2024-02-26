@@ -3,79 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2FA to TOTP Converter</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f4f4f4;
-    }
-
-    #container {
-        text-align: center;
-    }
-
-    button {
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-</style>
+<title>Clipboard Token Display</title>
 </head>
 <body>
-<div id="container">
-    <button onclick="convertAndCopy()">Convert 2FA to TOTP</button>
-</div>
+    <h1>Clipboard Token Display</h1>
+    <button onclick="fetchToken()">Get Token from Clipboard</button>
+    <div id="tokenDisplay"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/jsotp@1.0.1/dist/jsotp.min.js"></script>
-<script>
-    function convertAndCopy() {
-        navigator.clipboard.readText()
-            .then(text => {
-                // Kiểm tra xem chuỗi có đúng định dạng của 2FA hay không
-                const regex = /^[A-Z0-9]{16}$/;
-                if (regex.test(text)) {
-                    // Tạo mã TOTP từ chuỗi đầu vào
-                    const totpCode = generateTOTP(text);
-
-                    // Sao chép mã TOTP vào clipboard
-                    navigator.clipboard.writeText(totpCode)
-                        .then(() => alert("Converted and copied to clipboard: " + totpCode))
-                        .catch(err => console.error('Failed to copy text: ', err));
+    <script>
+        function fetchToken() {
+            // Lấy giá trị từ clipboard
+            navigator.clipboard.readText().then(clipboardText => {
+                // Kiểm tra xem clipboard có giá trị không
+                if (clipboardText) {
+                    // Gửi request GET để lấy token từ URL https://2fa.live/tok/<Clipboard>
+                    fetch(`https://2fa.live/tok/${clipboardText}`)
+                        .then(response => response.text())
+                        .then(token => {
+                            // Hiển thị token lấy được trên trang web
+                            document.getElementById('tokenDisplay').innerText = `Token: ${token}`;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching token:', error);
+                            document.getElementById('tokenDisplay').innerText = 'Error fetching token';
+                        });
                 } else {
-                    alert("Clipboard content is not in the correct format.");
+                    // Hiển thị thông báo nếu clipboard không có giá trị
+                    document.getElementById('tokenDisplay').innerText = 'Clipboard is empty';
                 }
             })
-            .catch(err => {
-                console.error('Failed to read clipboard contents: ', err);
-                alert("Failed to read clipboard contents. Please try again.");
+            .catch(error => {
+                console.error('Error reading clipboard:', error);
+                document.getElementById('tokenDisplay').innerText = 'Error reading clipboard';
             });
-    }
-
-    function generateTOTP(secretKey) {
-        // Tạo một mã TOTP dựa trên khoá bí mật và thời gian hiện tại
-        const totp = jsotp.totp({
-            secret: secretKey
-        });
-
-        // Lấy mã TOTP gồm 6 chữ số
-        const totpCode = totp.now();
-
-        return totpCode;
-    }
-</script>
+        }
+    </script>
 </body>
 </html>
