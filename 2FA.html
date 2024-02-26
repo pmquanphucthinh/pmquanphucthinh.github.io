@@ -3,39 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clipboard Token Display</title>
+<title>2FA Token Display</title>
 </head>
 <body>
-    <h1>Clipboard Token Display</h1>
-    <button onclick="fetchToken()">Get Token from Clipboard</button>
+    <h1>2FA Token Display</h1>
+    <label for="tokenInput">Enter 2FA Key:</label>
+    <input type="text" id="tokenInput">
+    <button onclick="fetchToken()">Get Token</button>
     <div id="tokenDisplay"></div>
 
     <script>
         function fetchToken() {
-            // Lấy giá trị từ clipboard
-            navigator.clipboard.readText().then(clipboardText => {
-                // Kiểm tra xem clipboard có giá trị không
-                if (clipboardText) {
-                    // Gửi request GET để lấy token từ URL https://2fa.live/tok/<Clipboard>
-                    fetch(`https://2fa.live/tok/${clipboardText}`)
-                        .then(response => response.text())
-                        .then(token => {
-                            // Hiển thị token lấy được trên trang web
-                            document.getElementById('tokenDisplay').innerText = `Token: ${token}`;
-                        })
-                        .catch(error => {
-                            console.error('Error fetching token:', error);
-                            document.getElementById('tokenDisplay').innerText = 'Error fetching token';
-                        });
-                } else {
-                    // Hiển thị thông báo nếu clipboard không có giá trị
-                    document.getElementById('tokenDisplay').innerText = 'Clipboard is empty';
-                }
-            })
-            .catch(error => {
-                console.error('Error reading clipboard:', error);
-                document.getElementById('tokenDisplay').innerText = 'Error reading clipboard';
-            });
+            // Lấy giá trị từ ô nhập liệu
+            var tokenInput = document.getElementById('tokenInput').value.trim();
+
+            // Kiểm tra xem ô nhập liệu có rỗng không
+            if (tokenInput) {
+                // Gửi request GET để lấy token từ URL https://2fa.live/tok/<2FA Key>
+                fetch(`https://2fa.live/tok/${tokenInput}`)
+                    .then(response => response.text())
+                    .then(token => {
+                        // Hiển thị token lấy được trên trang web
+                        document.getElementById('tokenDisplay').innerText = `Token: ${token}`;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching token:', error);
+                        document.getElementById('tokenDisplay').innerText = 'Error fetching token';
+                    });
+            } else {
+                // Hiển thị thông báo nếu ô nhập liệu rỗng
+                document.getElementById('tokenDisplay').innerText = 'Please enter a 2FA key';
+            }
         }
     </script>
 </body>
