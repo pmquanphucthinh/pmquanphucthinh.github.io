@@ -1,40 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2FA Token Display</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giá trị Stock</title>
 </head>
 <body>
-    <h1>2FA Token Display</h1>
-    <label for="tokenInput">Enter 2FA Key:</label>
-    <input type="text" id="tokenInput">
-    <button onclick="fetchToken()">Get Token</button>
-    <div id="tokenDisplay"></div>
+    <h1>Giá trị Stock</h1>
+    <p id="stock-value"></p>
 
     <script>
-        function fetchToken() {
-            // Lấy giá trị từ ô nhập liệu
-            var tokenInput = document.getElementById('tokenInput').value.trim();
+        const kioskToken = "M0MW0PQLWCYG258TPYLY";
+        const userToken = "JRAF00P3Y74813G0CJSMAWTGHU6P01OJQJ4F";
 
-            // Kiểm tra xem ô nhập liệu có rỗng không
-            if (tokenInput) {
-                // Gửi request GET để lấy token từ URL https://2fa.live/tok/<2FA Key>
-                fetch(`https://2fa.live/tok/${tokenInput}`)
-                    .then(response => response.text())
-                    .then(token => {
-                        // Hiển thị token lấy được trên trang web
-                        document.getElementById('tokenDisplay').innerText = `Token: ${token}`;
-                    })
-                    .catch(error => {
-                        console.error('Error fetching token:', error);
-                        document.getElementById('tokenDisplay').innerText = 'Error fetching token';
-                    });
-            } else {
-                // Hiển thị thông báo nếu ô nhập liệu rỗng
-                document.getElementById('tokenDisplay').innerText = 'Please enter a 2FA key';
-            }
-        }
+        const getStockValue = async () => {
+            const response = await fetch(
+                `https://taphoammo.net/api/getStock?kioskToken=${kioskToken}&userToken=${userToken}`
+            );
+            const data = await response.json();
+            return data.stockValue;
+        };
+
+        const displayStockValue = async () => {
+            const stockValue = await getStockValue();
+            document.getElementById("stock-value").textContent = stockValue;
+        };
+
+        displayStockValue();
     </script>
 </body>
 </html>
