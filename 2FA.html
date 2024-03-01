@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giá trị Stock</title>
+    <title>Giá trị Stock 2</title>
 </head>
 <body>
     <h1>Giá trị Stock</h1>
+    <button id="get-stock-value">Tải giá trị stock</button>
     <p id="stock-value"></p>
 
     <script>
@@ -21,12 +22,17 @@
             return data.stockValue;
         };
 
-        const displayStockValue = async () => {
-            const stockValue = await getStockValue();
+        const displayStockValue = (stockValue) => {
             document.getElementById("stock-value").textContent = stockValue;
         };
 
-        displayStockValue();
+        const button = document.getElementById("get-stock-value");
+        button.addEventListener("click", async () => {
+            const stockValue = await getStockValue();
+            displayStockValue(stockValue);
+        });
+
+        displayStockValue("...");
     </script>
 </body>
 </html>
